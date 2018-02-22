@@ -17,6 +17,11 @@
             color: darkblue;
         }
 
+        .cdWarn{
+            background-color: red;
+            color: white;
+        }
+
     </style>
 </head>
 
@@ -185,10 +190,15 @@
             }
 
             render() {
-                const seconds = (this.state.time / 1000) % 60;
-                const minutes = seconds / 60;
-                const formattedTime = timeFormat(this.state.time)
+                // Changing format due to learning that padStart existed
+                const mseconds = String(this.state.time % 1000).padStart(3, '0');
+                const seconds = String(Math.floor((this.state.time / 1000) % 60, 2)).padStart(2, '0');
+                const minutes = Math.floor(seconds / 60, 2);
+
                 const state = this.state.isRunning;
+
+                const formattedTime = `${minutes}:${seconds}.${mseconds}`
+                // const formattedTime = timeFormat(this.state.time)
 
                 return(
                     <div>
@@ -217,7 +227,6 @@
                 };
                 this.start = this.start.bind(this);
                 this.reset = this.reset.bind(this);
-
             }
 
             componentWillUnmount() {
@@ -228,7 +237,6 @@
                 // Clear + stop timer
                 this.setState({time: this.timeset, timeRemaining: this.timeset, isRunning: false});
                 clearInterval(this.timerId);
-
             }
 
             start() {
@@ -248,9 +256,11 @@
 
             render() {
                 const state = this.state.isRunning;
+                let cdState;
+                this.state.timeRemaining > 5 ? cdState = "cdNorm" : cdState = "cdWarn";
                 return(
                     <div>
-                        <p>{this.state.timeRemaining}</p>
+                        <p className={cdState}>{this.state.timeRemaining}</p>
                         <button onClick={this.start}>
                             Start
                         </button>
