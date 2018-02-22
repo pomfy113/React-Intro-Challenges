@@ -69,6 +69,7 @@
             return (
                 <li key={index}>
                     <Title title={person.name} subtitle={person.age}/>
+                    <Stopwatch/>
                 </li>
             );
           });
@@ -141,50 +142,8 @@
             }
         }
         // --------------------------------
-        //
-        // class Timer extends React.Component{
-        //     constructor(props){
-        //         super(props);
-        //         this.state = {
-        //             isRunning: false,
-        //             time: 0
-        //         };
-        //         // this.start.bind(this);
-        //         this.toggleRun.bind(this);
-        //     }
-        //
-        //     toggleRun(){
-        //         this.setState({isRunning: !this.state.isRunning}, () => {
-        //             // If it's running, set new timer
-        //             this.state.isRunning ? this.start() : clearInterval(this.timer);
-        //         })
-        //     }
-        //
-        //     start(){
-        //         console.log("Testing", Date.now());
-        //         this.startTime = Date.now();
-        //         console.log("Testing2", Date.now(), this.startTime);
-        //         this.timer = setInterval(() => this.tick(), 500)
-        //     }
-        //
-        //     tick(){
-        //         let runtime = Date.now() - this.startTime;
-        //         console.log("Ticking")
-        //         this.setState({time: this.state.time + runtime});
-        //     }
-        //
-        //     render() {
-        //         const seconds = this.state.time % 1000;
-        //         return(
-        //             <div>
-        //                 <Title title="Timer" subtitle={seconds}/>
-        //                 <button onClick={this.toggleRun}>Start</button>
-        //             </div>
-        //         );
-        //     }
-        // }
 
-        class Timer extends React.Component{
+        class Stopwatch extends React.Component{
             constructor(props){
                 super(props);
                 this.state = {
@@ -193,11 +152,10 @@
                 };
                 this.toggle = this.toggle.bind(this);
                 this.reset = this.reset.bind(this);
-
             }
 
             componentWillUnmount() {
-                clearInterval(this.timerId);
+                clearInterval(this.timerId);  // I gotta ask about this later
             }
 
             toggle() {
@@ -205,7 +163,7 @@
                     if(this.state.isRunning){
                         // The offset allows us to leave off where we started
                         this.startTime = Date.now() - this.state.time;
-                        this.timerId = setInterval(() => this.tick(), 100);
+                        this.timerId = setInterval(() => this.tick(), 50);
                     }
                     else{
                         // Stop the ongoing interval to freeze timer
@@ -216,11 +174,13 @@
             }
 
             reset(){
+                // Clear + stop timer
                 clearInterval(this.timerId);
                 this.setState({time: 0, isRunning: false});
             }
 
             tick() {
+                // Counting up
                 this.setState({time: Date.now() - this.startTime});
             }
 
@@ -228,12 +188,11 @@
                 const seconds = (this.state.time / 1000) % 60;
                 const minutes = seconds / 60;
                 const formattedTime = timeFormat(this.state.time)
-
-                // console.log(formattedTime)
                 const state = this.state.isRunning;
+
                 return(
                     <div>
-                        <Title title="Timer" subtitle={formattedTime}/>
+                        <p>{formattedTime}</p>
                         <button onClick={this.toggle}>
                             {state ? 'Stop' : 'Start'}
                         </button>
@@ -245,26 +204,84 @@
             }
         }
 
+        // --------------------------------
+
+        class Countdown extends React.Component{
+            constructor(props){
+                super(props);
+                this.timeset = 10;
+                this.state = {
+                    isRunning: false,
+                    time: this.timeset,
+                    timeRemaining: this.timeset
+                };
+                this.start = this.start.bind(this);
+                this.reset = this.reset.bind(this);
+
+            }
+
+            componentWillUnmount() {
+                clearInterval(this.timerId);  // I gotta ask about this later
+            }
+
+            reset(){
+                // Clear + stop timer
+                this.setState({time: this.timeset, timeRemaining: this.timeset, isRunning: false});
+                clearInterval(this.timerId);
+
+            }
+
+            start() {
+                this.setState({isRunning: true}, () => {
+                    this.startTime = Date.now();
+                    this.timerId = setInterval(() => this.tick(), 50);
+                });
+            }
+
+            tick() {
+                // Counting down
+                let elapsed = (this.state.time - ((Date.now() - this.startTime) / 1000)).toFixed(3);
+                this.setState({timeRemaining: elapsed });
+                this.state.timeRemaining <= 0 ? (this.reset(), window.alert("Done")) : null;
+
+            }
+
+            render() {
+                const state = this.state.isRunning;
+                return(
+                    <div>
+                        <p>{this.state.timeRemaining}</p>
+                        <button onClick={this.start}>
+                            Start
+                        </button>
+                        <button onClick={this.reset}>
+                            Stop
+                        </button>
+                    </div>
+                );
+            }
+        }
+
         const timeFormat = (time) => {
-            const seconds = time / 1000
+            const seconds = time / 1000;
             let fmilli, secString;
             let fseconds = Math.floor(seconds % 60, 2);
             let fminutes = Math.floor(seconds / 60, 2);
+
+            // Dealing with seconds/milliseconds is a pain
             if(seconds < 10){
-                secString = "0" + fseconds;
+                secString = "0" + fseconds;  // Just add an extra "0"
                 fmilli = seconds.toFixed(3).substring(2);
             }
             else{
                 secString = String(fseconds);
-                fmilli = seconds.toFixed(3).substring(3);
+                fmilli = seconds.toFixed(3).substring(3);  // Omit the period.
 
             }
 
-            console.log(fmilli, seconds)
             return `${fminutes}:${secString}.${fmilli}`
 
         };
-
 
 
         // --------------------------------
@@ -280,7 +297,8 @@
                 <Title title="Simple React Starter" />
                 <Clock />
                 <List items={things} />
-                <Timer />
+                <Stopwatch />
+                <Countdown />
 
             </div>,
             document.getElementById('app')
