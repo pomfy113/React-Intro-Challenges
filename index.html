@@ -273,6 +273,10 @@
         }
 
         const timeFormat = (time) => {
+            /*
+                Used for formatting the time
+                Due to padStart existing, it's not needed, but hey, it exists.
+            */
             const seconds = time / 1000;
             let fmilli, secString;
             let fseconds = Math.floor(seconds % 60, 2);
