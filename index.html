@@ -203,10 +203,10 @@
                 return(
                     <div>
                         <p>{formattedTime}</p>
-                        <button onClick={this.toggle}>
+                        <button onClick={() => this.toggle()}>
                             {state ? 'Stop' : 'Start'}
                         </button>
-                        <button onClick={this.reset}>
+                        <button onClick={() => this.reset()}>
                             Reset
                         </button>
                     </div>
