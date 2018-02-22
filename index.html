@@ -191,16 +191,33 @@
                     isRunning: false,
                     time: 0
                 };
-                this.start = this.start.bind(this);
+                this.toggle = this.toggle.bind(this);
+                this.reset = this.reset.bind(this);
+
             }
 
             componentWillUnmount() {
                 clearInterval(this.timerId);
             }
 
-            start() {
-                this.startTime = Date.now();
-                setInterval(() => this.tick(), 100);
+            toggle() {
+                this.setState({isRunning: !this.state.isRunning}, () =>{
+                    if(this.state.isRunning){
+                        // The offset allows us to leave off where we started
+                        this.startTime = Date.now() - this.state.time;
+                        this.timerId = setInterval(() => this.tick(), 100);
+                    }
+                    else{
+                        // Stop the ongoing interval to freeze timer
+                        clearInterval(this.timerId);
+                    }
+
+                })
+            }
+
+            reset(){
+                clearInterval(this.timerId);
+                this.setState({time: 0, isRunning: false});
             }
 
             tick() {
@@ -208,17 +225,45 @@
             }
 
             render() {
-                const seconds = this.state.time / 1000;
+                const seconds = (this.state.time / 1000) % 60;
+                const minutes = seconds / 60;
+                const formattedTime = timeFormat(this.state.time)
+
+                // console.log(formattedTime)
+                const state = this.state.isRunning;
                 return(
                     <div>
-                        <Title title="Timer" subtitle={seconds}/>
-                        <button onClick={this.start}>Start</button>
+                        <Title title="Timer" subtitle={formattedTime}/>
+                        <button onClick={this.toggle}>
+                            {state ? 'Stop' : 'Start'}
+                        </button>
+                        <button onClick={this.reset}>
+                            Reset
+                        </button>
                     </div>
                 );
             }
         }
 
+        const timeFormat = (time) => {
+            const seconds = time / 1000
+            let fmilli, secString;
+            let fseconds = Math.floor(seconds % 60, 2);
+            let fminutes = Math.floor(seconds / 60, 2);
+            if(seconds < 10){
+                secString = "0" + fseconds;
+                fmilli = seconds.toFixed(3).substring(2);
+            }
+            else{
+                secString = String(fseconds);
+                fmilli = seconds.toFixed(3).substring(3);
 
+            }
+
+            console.log(fmilli, seconds)
+            return `${fminutes}:${secString}.${fmilli}`
+
+        };
 
 
 
