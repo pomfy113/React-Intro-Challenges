@@ -29,8 +29,6 @@
     <script type="text/babel">
 
 
-
-
         // --------------------------------
         // Simple Component
 
@@ -143,7 +141,82 @@
             }
         }
         // --------------------------------
+        //
+        // class Timer extends React.Component{
+        //     constructor(props){
+        //         super(props);
+        //         this.state = {
+        //             isRunning: false,
+        //             time: 0
+        //         };
+        //         // this.start.bind(this);
+        //         this.toggleRun.bind(this);
+        //     }
+        //
+        //     toggleRun(){
+        //         this.setState({isRunning: !this.state.isRunning}, () => {
+        //             // If it's running, set new timer
+        //             this.state.isRunning ? this.start() : clearInterval(this.timer);
+        //         })
+        //     }
+        //
+        //     start(){
+        //         console.log("Testing", Date.now());
+        //         this.startTime = Date.now();
+        //         console.log("Testing2", Date.now(), this.startTime);
+        //         this.timer = setInterval(() => this.tick(), 500)
+        //     }
+        //
+        //     tick(){
+        //         let runtime = Date.now() - this.startTime;
+        //         console.log("Ticking")
+        //         this.setState({time: this.state.time + runtime});
+        //     }
+        //
+        //     render() {
+        //         const seconds = this.state.time % 1000;
+        //         return(
+        //             <div>
+        //                 <Title title="Timer" subtitle={seconds}/>
+        //                 <button onClick={this.toggleRun}>Start</button>
+        //             </div>
+        //         );
+        //     }
+        // }
 
+        class Timer extends React.Component{
+            constructor(props){
+                super(props);
+                this.state = {
+                    isRunning: false,
+                    time: 0
+                };
+                this.start = this.start.bind(this);
+            }
+
+            componentWillUnmount() {
+                clearInterval(this.timerId);
+            }
+
+            start() {
+                this.startTime = Date.now();
+                setInterval(() => this.tick(), 100);
+            }
+
+            tick() {
+                this.setState({time: Date.now() - this.startTime});
+            }
+
+            render() {
+                const seconds = this.state.time / 1000;
+                return(
+                    <div>
+                        <Title title="Timer" subtitle={seconds}/>
+                        <button onClick={this.start}>Start</button>
+                    </div>
+                );
+            }
+        }
 
 
 
@@ -162,6 +235,8 @@
                 <Title title="Simple React Starter" />
                 <Clock />
                 <List items={things} />
+                <Timer />
+
             </div>,
             document.getElementById('app')
         );
