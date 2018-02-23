@@ -59,7 +59,16 @@
         margin-left: 20px;
     }
 
+    .highlight{
+        background-color: black;
+        color: white;
+    }
 
+    .winning{
+        background-color: lightblue;
+        color: white;
+        text-shadow: 0px 0px 1px aqua;
+    }
 
     </style>
 </head>
@@ -74,33 +83,48 @@
     <script type="text/babel">
     function Square(props) {
         return (
-            <button className="square"  onClick={props.onClick}>
+            <button className={props.className} onClick={props.onClick}>
             {props.value}
             </button>
         );
     }
 
     class Board extends React.Component {
-        renderSquare(i) {
+        renderSquare(i, type) {
             return <Square
             key={i}
+            className={type}
             value={this.props.squares[i]}
             onClick={() => this.props.onClick(i)}
             />;
         }
-
 
         render() {
             // I should pass these in, but let's ASSUME they're just 3 for now
             const rows = 3;
             const cols = 3;
             const board = []
+            // Square Type
+            const highlight = "square highlight"
+            const normal = "square"
+            const winningSquare = "square winning"
             // Let's make this in a loop
             for(let i = 0; i < cols; i++){
                 // Each square in row
                 let boardrow = []
                 for(let j = 0; j < rows; j++){
-                    boardrow.push(this.renderSquare((i*rows) + j))
+                    const coord = (i*rows) + j;
+                    if(this.props.winner){
+                        // We got a winner!
+                        boardrow.push(this.renderSquare(coord,
+                        this.props.winner.includes(coord) ? winningSquare : normal));
+                    }
+                    else{
+                        // We highlight the most recent thing we hit
+                        boardrow.push(this.renderSquare(coord,
+                        coord === this.props.current ? highlight: normal));
+                    }
+
                 }
                 // Row per column
                 board.push(
@@ -137,15 +161,13 @@
             const current = history[this.state.stepNumber];
             const squares = current.squares.slice();
 
-            if (calculateWinner(squares) || squares[i]) {
+            const winner = calculateWinner(squares)
+
+            if (winner || squares[i]) {
                 return;
             }
 
-            this.state.xIsNext ?
-            (squares[i] = <strong><u>X</u></strong>, squares[current.lastStep] = "O")
-            :
-            (squares[i] = <strong><u>O</u></strong>, squares[current.lastStep] = "X")
-
+            squares[i] = this.state.xIsNext ? 'X' : 'O';
 
             this.setState({
                 history: history.concat([{ squares: squares, lastStep: i}]),
@@ -166,10 +188,11 @@
             const history = this.state.history;
             const current = history[this.state.stepNumber];
             const winner = calculateWinner(current.squares);
+            const winningSquares = winner ? winner[1] : null;
             let status;
 
             if (winner) {
-                status = 'Winner: ' + winner;
+                status = 'Winner: ' + winner[0];
             } else {
                 status = 'Next player: ' + (this.state.xIsNext ? 'X' : 'O');
             }
@@ -187,15 +210,14 @@
                     </li>
                 );
             });
-
-            // current.squares[current.lastStep] = <u>{current.squares[current.lastStep]}</u>
-
-
+            console.log(current.squares)
             return (
                 <div className="game">
                 <div className="game-board">
                 <Board
                 squares={current.squares}
+                current={current.lastStep}
+                winner={winningSquares}
                 onClick={(i) => this.handleClick(i)}
                 />
                 </div>
@@ -226,7 +248,7 @@
             const [a, b, c] = lines[i];
             // If they all match, done deal
             if (squares[a] && squares[a] === squares[b] && squares[a] === squares[c]) {
-                return squares[a];
+                return [squares[a], lines[i]];
             }
         }
         return null;
