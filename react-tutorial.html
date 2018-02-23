@@ -59,11 +59,12 @@
         margin-left: 20px;
     }
 
+    /* Last step */
     .highlight{
         background-color: black;
         color: white;
     }
-
+    /* All winning */
     .winning{
         background-color: lightblue;
         color: white;
@@ -91,6 +92,7 @@
 
     class Board extends React.Component {
         renderSquare(i, type) {
+            // i for the index, type for styling purposes
             return <Square
             key={i}
             className={type}
@@ -104,9 +106,9 @@
             const rows = 3;
             const cols = 3;
             const board = []
-            // Square Type
-            const highlight = "square highlight"
+            // Square Type; straightforward naming convention
             const normal = "square"
+            const highlight = "square highlight"
             const winningSquare = "square winning"
             // Let's make this in a loop
             for(let i = 0; i < cols; i++){
@@ -115,12 +117,12 @@
                 for(let j = 0; j < rows; j++){
                     const coord = (i*rows) + j;
                     if(this.props.winner){
-                        // We got a winner!
+                        // If winner, just highlight winning squares
                         boardrow.push(this.renderSquare(coord,
                         this.props.winner.includes(coord) ? winningSquare : normal));
                     }
                     else{
-                        // We highlight the most recent thing we hit
+                        // Else, we just highlight the most recent thing we hit
                         boardrow.push(this.renderSquare(coord,
                         coord === this.props.current ? highlight: normal));
                     }
@@ -135,9 +137,7 @@
             }
 
             return (
-                <div>
-                    {board}
-                </div>
+                <div>{board}</div>
             );
         }
     }
@@ -148,11 +148,11 @@
             this.state = {
                 history: [{
                     squares: Array(9).fill(null),
-                    lastStep: null
+                    lastStep: null  // To see the last thing we hit
                 }],
-                xIsNext: true,
-                stepNumber: 0,
-                reverse: false
+                xIsNext: true,   // O vs X
+                stepNumber: 0,   // Just how many steps in
+                reverse: false   // For button order
             };
 
         }
@@ -162,9 +162,8 @@
             const current = history[this.state.stepNumber];
             const squares = current.squares.slice();
 
-            const winner = calculateWinner(squares)
-
-            if (winner || squares[i]) {
+            // Stop on win
+            if (calculateWinner(squares) || squares[i]) {
                 return;
             }
 
@@ -179,6 +178,7 @@
         }
 
         jumpTo(step) {
+          // Jumping back in history
           this.setState({
             stepNumber: step,
             xIsNext: (step % 2) === 0,
@@ -192,9 +192,10 @@
         render() {
             const history = this.state.history;
             const current = history[this.state.stepNumber];
-            const winner = calculateWinner(current.squares);
-            const winningSquares = winner ? winner[1] : null;
+            const winner = calculateWinner(current.squares);    // [0] is just who won
+            const winningSquares = winner ? winner[1] : null;   // [1] is the winning squares
             const reverse = this.state.reverse;
+
             let status;
 
             if (winner) {
@@ -203,6 +204,7 @@
                 status = 'Next player: ' + (this.state.xIsNext ? 'X' : 'O');
             }
 
+            // Filled squares mean we have a draw
             !current.squares.includes(null) && !winner ? status = "DRAW!" : null;
 
             const moves = history.map((step, move) => {
@@ -212,9 +214,10 @@
                 const desc = move ?
                 `Go to move #${move}, row: ${coord[0]}, row: ${coord[1]}, next turn: ${turn}`:
                 'Go to game start';
+                // Buttons for moving around
                 return (
                     <li key={move}>
-                    <button onClick={() => this.jumpTo(move)}>{desc}</button>
+                        <button onClick={() => this.jumpTo(move)}>{desc}</button>
                     </li>
                 );
             });
