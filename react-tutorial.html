@@ -91,17 +91,18 @@
 
 
         render() {
+            // I should pass these in, but let's ASSUME they're just 3 for now
             const rows = 3;
             const cols = 3;
             const board = []
             // Let's make this in a loop
             for(let i = 0; i < cols; i++){
-                // First go around: each row
+                // Each square in row
                 let boardrow = []
                 for(let j = 0; j < rows; j++){
                     boardrow.push(this.renderSquare((i*rows) + j))
                 }
-                // Now putting it in as a group
+                // Row per column
                 board.push(
                     <div key={i} className = "board-row">
                         {boardrow}
@@ -123,10 +124,12 @@
             this.state = {
                 history: [{
                     squares: Array(9).fill(null),
+                    lastStep: null
                 }],
                 xIsNext: true,
                 stepNumber: 0
             };
+
         }
 
         handleClick(i) {
@@ -137,12 +140,19 @@
             if (calculateWinner(squares) || squares[i]) {
                 return;
             }
-            squares[i] = this.state.xIsNext ? 'X' : 'O';
+
+            this.state.xIsNext ?
+            (squares[i] = <strong><u>X</u></strong>, squares[current.lastStep] = "O")
+            :
+            (squares[i] = <strong><u>O</u></strong>, squares[current.lastStep] = "X")
+
+
             this.setState({
-                history: history.concat([{ squares: squares}]),
+                history: history.concat([{ squares: squares, lastStep: i}]),
                 xIsNext: !this.state.xIsNext,
                 stepNumber: history.length
             });
+
         }
 
         jumpTo(step) {
@@ -156,8 +166,8 @@
             const history = this.state.history;
             const current = history[this.state.stepNumber];
             const winner = calculateWinner(current.squares);
-
             let status;
+
             if (winner) {
                 status = 'Winner: ' + winner;
             } else {
@@ -165,16 +175,21 @@
             }
 
             const moves = history.map((step, move) => {
+                // Coordinates; first is row, then column. Index starts at 1
+                const coord = [Math.floor(step.lastStep / 3) + 1, step.lastStep % 3 + 1]
+                const turn = (move % 2) === 0 ? 'X' : 'O'
                 const desc = move ?
-                'Go to move #' + move :
+                `Go to move #${move}, row: ${coord[0]}, row: ${coord[1]}, next turn: ${turn}`:
                 'Go to game start';
-                console.log(step)
                 return (
                     <li key={move}>
                     <button onClick={() => this.jumpTo(move)}>{desc}</button>
                     </li>
                 );
             });
+
+            // current.squares[current.lastStep] = <u>{current.squares[current.lastStep]}</u>
+
 
             return (
                 <div className="game">
