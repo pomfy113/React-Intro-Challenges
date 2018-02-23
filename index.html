@@ -246,6 +246,7 @@
                 });
             }
 
+
             tick() {
                 // Counting down
                 let elapsed = (this.state.time - ((Date.now() - this.startTime) / 1000)).toFixed(3);
@@ -271,7 +272,6 @@
                 );
             }
         }
-
         const timeFormat = (time) => {
             /*
                 Used for formatting the time

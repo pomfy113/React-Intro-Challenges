@@ -74,7 +74,7 @@
     <script type="text/babel">
     function Square(props) {
         return (
-            <button className="square" onClick={props.onClick}>
+            <button className="square"  onClick={props.onClick}>
             {props.value}
             </button>
         );
@@ -83,29 +83,35 @@
     class Board extends React.Component {
         renderSquare(i) {
             return <Square
+            key={i}
             value={this.props.squares[i]}
             onClick={() => this.props.onClick(i)}
             />;
         }
 
+
         render() {
+            const rows = 3;
+            const cols = 3;
+            const board = []
+            // Let's make this in a loop
+            for(let i = 0; i < cols; i++){
+                // First go around: each row
+                let boardrow = []
+                for(let j = 0; j < rows; j++){
+                    boardrow.push(this.renderSquare((i*rows) + j))
+                }
+                // Now putting it in as a group
+                board.push(
+                    <div key={i} className = "board-row">
+                        {boardrow}
+                    </div>
+                )
+            }
+
             return (
                 <div>
-                <div className="board-row">
-                {this.renderSquare(0)}
-                {this.renderSquare(1)}
-                {this.renderSquare(2)}
-                </div>
-                <div className="board-row">
-                {this.renderSquare(3)}
-                {this.renderSquare(4)}
-                {this.renderSquare(5)}
-                </div>
-                <div className="board-row">
-                {this.renderSquare(6)}
-                {this.renderSquare(7)}
-                {this.renderSquare(8)}
-                </div>
+                    {board}
                 </div>
             );
         }
@@ -137,7 +143,6 @@
                 xIsNext: !this.state.xIsNext,
                 stepNumber: history.length
             });
-
         }
 
         jumpTo(step) {
@@ -146,7 +151,6 @@
             xIsNext: (step % 2) === 0,
           });
         }
-
 
         render() {
             const history = this.state.history;
@@ -164,6 +168,7 @@
                 const desc = move ?
                 'Go to move #' + move :
                 'Go to game start';
+                console.log(step)
                 return (
                     <li key={move}>
                     <button onClick={() => this.jumpTo(move)}>{desc}</button>
