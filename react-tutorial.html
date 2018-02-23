@@ -151,7 +151,8 @@
                     lastStep: null
                 }],
                 xIsNext: true,
-                stepNumber: 0
+                stepNumber: 0,
+                reverse: false
             };
 
         }
@@ -184,11 +185,16 @@
           });
         }
 
+        reverseOrder(){
+            this.setState({reverse: !this.state.reverse})
+        }
+
         render() {
             const history = this.state.history;
             const current = history[this.state.stepNumber];
             const winner = calculateWinner(current.squares);
             const winningSquares = winner ? winner[1] : null;
+            const reverse = this.state.reverse;
             let status;
 
             if (winner) {
@@ -196,6 +202,8 @@
             } else {
                 status = 'Next player: ' + (this.state.xIsNext ? 'X' : 'O');
             }
+
+            !current.squares.includes(null) && !winner ? status = "DRAW!" : null;
 
             const moves = history.map((step, move) => {
                 // Coordinates; first is row, then column. Index starts at 1
@@ -210,7 +218,7 @@
                     </li>
                 );
             });
-            console.log(current.squares)
+
             return (
                 <div className="game">
                 <div className="game-board">
@@ -223,7 +231,8 @@
                 </div>
                 <div className="game-info">
                 <div>{status}</div>
-                <ol>{moves}</ol>
+                <button onClick={() => this.reverseOrder()}>Reverse Button Order</button>
+                <ol>{reverse ? moves.slice(0).reverse() : moves}</ol>
                 </div>
                 </div>
             );
