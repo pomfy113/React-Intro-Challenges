@@ -14,7 +14,6 @@ import inventory, {categories} from './inventory';
 ReactDOM.render(
     <div>
         <App />
-        <Categories categories={categories}/>
-        <CompList items={inventory}/>
+        <CompList categories={categories} items={inventory}/>
     </div>, document.getElementById('root'));
 registerServiceWorker();

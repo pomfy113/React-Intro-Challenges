@@ -1,10 +1,24 @@
 import React, { Component } from 'react';
-import Category from './Category'
+
+function Category(props) {
+    return(
+        <button>{props.value}</button>
+    )
+}
+
 
 class Categories extends Component {
+    renderCategory(item, index) {
+        console.log(item, index)
+        return <Category
+            key={index}
+            value={item}
+        />
+    }
+
     render() {
         const buttons = this.props.categories.map((item, index) =>{
-            return <Category key={index} value={item}/>
+            return this.renderCategory(item, index)
         })
 
         return(
