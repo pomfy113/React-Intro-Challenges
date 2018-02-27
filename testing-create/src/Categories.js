@@ -2,17 +2,18 @@ import React, { Component } from 'react';
 
 function Category(props) {
     return(
-        <button>{props.value}</button>
+        <button className={props.isOn} onClick={props.onClick}>{props.value}</button>
     )
 }
 
 
 class Categories extends Component {
     renderCategory(item, index) {
-        console.log(item, index)
         return <Category
             key={index}
             value={item}
+            isOn={this.props.current[index] ? "on" : "off"}
+            onClick={() => this.props.onClick(index)}
         />
     }
 

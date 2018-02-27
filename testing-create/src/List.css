@@ -18,3 +18,12 @@
     border-radius: 15px;
     margin: 10px;
 }
+
+.categoryButtons .off{
+    background-color: grey;
+    color: white;
+}
+
+button:focus{
+    outline-color: #DDD;
+}

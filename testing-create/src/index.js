@@ -4,8 +4,6 @@ import './index.css';
 
 import App from './App';
 import CompList from './List';
-import Categories from './Categories';
-
 
 import registerServiceWorker from './registerServiceWorker';
 import inventory, {categories} from './inventory';
