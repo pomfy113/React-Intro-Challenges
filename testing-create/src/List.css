@@ -1,0 +1,14 @@
+.inventory{
+    display: inline-flex;
+    flex-wrap: wrap;
+    flex-direction: row;
+}
+
+.item{
+    margin: 10px;
+    border: 1px solid lightgrey;
+    border-radius: 10px;
+    padding: 5px;
+    width: 200px;
+
+}
