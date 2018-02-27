@@ -8,16 +8,16 @@ import Categories from './Categories';
 class CompList extends Component {
     constructor(props){
         super(props)
+        this.available = this.props.categories  // All categories
         this.state = {
-            available: this.props.categories,
-            current: this.props.categories
+            current: this.props.categories      // Categories we're showing
         }
     }
 
     filterChange(i){
         const current = this.state.current.slice();  // Slice to make a copy
         // If it's in, nullify; otherwise, put it in as available again
-        current[i] = current[i] ? null : this.state.available[i];
+        current[i] = current[i] ? null : this.available[i];
 
         this.setState({
             current: current
@@ -33,16 +33,14 @@ class CompList extends Component {
             return this.state.current.includes(item.props.category);
         })
 
-
         return(
             <div className="inventory">
                 <Categories
-                    categories={this.state.available}
+                    categories={this.available}
                     current={this.state.current}
                     onClick={(i) => this.filterChange(i)}
-
-
                 />
+
                 {filtered}
             </div>
         )
