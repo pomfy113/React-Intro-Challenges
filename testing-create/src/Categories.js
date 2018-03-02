@@ -6,7 +6,6 @@ function Category(props) {
     )
 }
 
-
 class Categories extends Component {
     renderCategory(item, index) {
         return <Category
@@ -17,13 +16,16 @@ class Categories extends Component {
         />
     }
 
+
     render() {
-        const buttons = this.props.categories.map((item, index) =>{
+        const buttons = this.props.categories.map((item, index) => {
             return this.renderCategory(item, index)
         })
 
         return(
-            <div className="categoryButtons">{buttons}</div>
+            <div className="categoryButtons">
+                {buttons}
+            </div>
         )
     }
 }

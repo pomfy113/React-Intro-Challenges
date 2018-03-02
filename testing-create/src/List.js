@@ -24,11 +24,19 @@ class CompList extends Component {
         })
     }
 
+    filterAll(){
+        this.setState({
+            current: this.available
+        })
+    }
+
     render() {
+        // All categories
         const invList = this.props.items.map((item) =>{
             return <Item key={item.id} name={item.name} price={item.price} category={item.category}/>
         })
 
+        // Post category filtering; uses state
         const filtered = invList.filter((item) => {
             return this.state.current.includes(item.props.category);
         })
@@ -39,9 +47,9 @@ class CompList extends Component {
                     categories={this.available}
                     current={this.state.current}
                     onClick={(i) => this.filterChange(i)}
+                    filterAll={() => this.filterAll()}
                 />
-
-                {filtered}
+                    {filtered}
             </div>
         )
     }
